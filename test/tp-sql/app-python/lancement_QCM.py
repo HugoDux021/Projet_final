@@ -1,7 +1,7 @@
 # Logiciel de gestion de QCM
 # Programme création de QCM
 # Créé par le groupe 1
-# Audas Arthur, Ballot Bastient, Durand Hugo, Héron Julie
+# Audas Arthur, Ballot Bastien, Durand Hugo, Héron Julie
 
 ############################################################################
 #Importation des bibliothèques et programmes associés

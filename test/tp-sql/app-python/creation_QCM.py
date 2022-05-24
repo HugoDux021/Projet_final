@@ -1,14 +1,22 @@
 # Logiciel de gestion de QCM
 # Programme création de QCM
 # Créé par le groupe 1
-# Audas Arthur, Ballot Bastient, Durand Hugo, Héron Julie
+# Audas Arthur, Ballot Bastien, Durand Hugo, Héron Julie
 
 
 ############################################################################
 #Importation des bibliothèques et programmes associés
 import tkinter as tk    #Pour l'interface graphique
 import mariadb
+import config
+import connect_db as db
 
+
+############################################################################
+#Connexion à la base de données Maria_db
+
+bdd = db.ConnectDb(config.config)
+connexion = bdd.connect()
 
 
 ############################################################################
@@ -32,7 +40,6 @@ class Nom_QCM:
     def __init__(self, connexion) -> None:
         # Propriété de l'objet application
         self.__nom = ''
-        self.__connexion = connexion
 
 
     def get_nom(self):
@@ -44,9 +51,9 @@ class Nom_QCM:
 
     def ajouter_un_QCM(self, nom_qcm):
         try:
-            cursor = self.__connexion.cursor()
-            cursor.execute('INSERT INTO Registre_QCM (`nom`) VALUES (?);',(nom_qcm,))
-            self.__connexion.commit()
+            cursor = connexion.cursor()
+            cursor.execute('INSERT INTO QCM (`nom`) VALUES (?);',(nom_qcm,))
+            connexion.commit()
             return 'Le QCM a bien été ajoutée'
         except mariadb.Error as e:     
             return f'Erreur lors de l\'ajout {e} '
@@ -57,39 +64,64 @@ class question:
 
     def __init__(self, connexion) -> None:
         # Propriété de l'objet application
-        self.__nom = ''
-        self.__editeur = ''
-        self.__version = "22.04"
+        self.__intitule = ''
+        self.__rep_A = ''
+        self.__rep_B = ''
+        self.__rep_C = ''
+        self.__rep_Correcte = ''
         self.__connexion = connexion
 
-
-    def get_nom(self):
-        return self.__nom
-
-    def set_nom(self, nom):
-        if isinstance(nom, str): 
-            self.__nom = nom
-
-    def get_editeur(self):
-        return self.__editeur
-
-    def set_editeur(self, editeur):
-        if isinstance(editeur, str): 
-            self.__editeur = editeur
-
-    def get_version(self):
-        return self.__version
-
-    def set_version(self, version):
-        if isinstance(version, str): 
-            self.__version = version
+    #########################
+    # Création des get et set
     
-    # • Permettre l’ajout d’une application
-    def ajouter_une_question(self, liste_donnees):
+    # Pour l'intitule
+    def get_intitule(self):
+        return self.__intitule
+
+    def set_intitule(self, intitule):
+        if isinstance(intitule, str): 
+            self.__intitule = intitule
+
+    # Pour la rep A
+    def get_rep_A(self):
+        return self.__rep_A 
+
+    def set_rep_A(self, rep_A):
+        if isinstance(rep_A, str): 
+            self.__rep_A = rep_A
+
+    # Pour la rep B
+    def get_rep_B(self):
+        return self.__rep_B
+
+    def set_rep_B(self, rep_B):
+        if isinstance(rep_B, str): 
+            self.__rep_B = rep_B
+            
+    # Pour la rep C
+    def get_rep_C(self):
+        return self.__rep_C
+
+    def set_rep_C(self, rep_C):
+        if isinstance(rep_C, str): 
+            self.__rep_C = rep_C
+
+    # Pour la rep Correcte
+    def get_rep_Correcte(self):
+        return self.__rep_Correcte
+
+    def set_rep_Correcte(self, rep_Correcte):
+        if isinstance(rep_Correcte, str): 
+            self.__rep_Correcte = rep_Correcte
+
+    #####################################
+    # Permettre l’ajout d’une application
+    
+    def ajouter_une_question(self, liste_donnees, nom_qcm):
         try:
-            cursor = self.__connexion.cursor()
-            cursor.execute('INSERT INTO question ( `intitule`, `rep_A`, `rep_B`, `rep_C`, `rep_Correcte`)  VALUES (?, ?, ?,?,?);',(liste_donnees[0], liste_donnees[1], liste_donnees[2], liste_donnees[3], liste_donnees[4],))
-            self.__connexion.commit()
+            cursor = connexion.cursor()
+            cursor.execute('INSERT INTO question ( `intitule`, `rep_A`, `rep_B`, `rep_C`, `rep_Correcte`, `QCM_id`)  VALUES (?, ?, ?, ?, ?, ?);',(liste_donnees[0], liste_donnees[1], liste_donnees[2], liste_donnees[3], liste_donnees[4], nom_qcm))
+            connexion.commit()
             return 'La question a bien été ajoutée'
         except mariadb.Error as e:     
             return f'Erreur lors de l\'ajout {e} '
@@ -106,18 +138,19 @@ Af0 = tk.Label(Fen0, text= u"Ecrire le nom de votre QCM." )
 Af1 = tk.Label(Fen0, text= u"" )
 Ent0 = tk.Entry(Fen0)
 
+
 def ma_commande_nom_qcm():  
-    nom_qcm = Ent0.get()
-    if nom_qcm == "": 
+    nom = Ent0.get()
+    if nom == "": 
         Af1.configure(text= u"Vous n'avez pas mis de nom" )                     # On précise le problème à l'utilisateur.
     else:       
         Af1.configure(text= u"Le nom est bien enregistré" )
         Fen0.destroy()
         
         #Enregistrement sur Mysql
-        Nom_QCM.ajouter_un_QCM(nom_qcm)
+        Nom_QCM.ajouter_un_QCM('',nom)
         
-        
+#Création du bouton
 Bout0 = tk.Button(Fen0,text=u"Valider", command=ma_commande_nom_qcm)
 
 Af0.pack()           
@@ -193,7 +226,7 @@ def ma_commande1():  # On crée une commande qui à pour but de vérifier si tou
         Af6.configure(text= u"" )
 
         #Enregistrement sur Mysql
-        question.ajouter_une_question(Question_entiere)
+        question.ajouter_une_question('',Question_entiere, nom_qcm)
         
 
     
@@ -216,11 +249,10 @@ def ma_commande2():
         #Enregistrement des valeurs en local
         Q = Question(Q1.enonce, Q1.rep1, Q1.rep2, Q1.rep3, Q1.repjuste)
         listOfQuestions.append(Q)
-        
         #Enregistrement sur Mysql
         Question_entiere = [enonce, rep1, rep2, rep3, repjuste]
-        question.ajouter_une_question(Question_entiere)
-        
+        question.ajouter_une_question('',Question_entiere, nom_qcm)
+        print(Question_entiere)
         #Fermeture de la fenetre
         Fen1.destroy()
 
