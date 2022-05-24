@@ -9,6 +9,15 @@
 import tkinter as tk
 import creation_QCM as crea
 import lancement_QCM as lance
+import config
+import connect_db as db
+
+
+############################################################################
+#Connexion à la base de données Maria_db
+
+bdd = db.ConnectDb(config.config)
+connexion = bdd.connect()
 
 
 ################################################################################

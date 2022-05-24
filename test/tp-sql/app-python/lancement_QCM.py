@@ -7,9 +7,12 @@
 #Importation des bibliothèques et programmes associés
 
 import tkinter as tk    #Pour l'interface graphique
+import mariadb
+
 
 ############################################################################
 #Lancement du QCM
+listOfQuestions=[]
 
 if len(listOfQuestions)>0 :
     #partie affichage de la fenetre du jeu
@@ -74,7 +77,7 @@ if len(listOfQuestions)>0 :
         #verification que l'index ne sorte pas de la liste
         if k-1<len(listOfQuestions):
             questionCourante = listOfQuestions[k-1]
-            Ent1.delete(0,END)
+            Ent1.delete(0,tk.END)
             Af2.configure ( text=u"Question "+str(k)+         # On affiche la question suivante.
                                 " : " + questionCourante.enonce)
             Af3.configure ( text=u"Réponse A : "
