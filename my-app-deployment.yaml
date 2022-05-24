@@ -1,0 +1,125 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb-svc
+  labels:
+    app: mypythonapp
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: mypythonapp
+    tier: mariadb
+  clusterIP: None
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mariadb-pv-claim
+  labels:
+    app: mypythonapp
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mypythonapp-mariadb
+  labels:
+    app: mypythonapp
+spec:
+  selector:
+    matchLabels:
+      app: mypythonapp
+      tier: mariadb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mypythonapp
+        tier: mariadb
+    spec:
+      containers:
+      - image: vanessakovalsky/correction-mariadb
+        name: mariadb
+        env:
+        - name: MARIADB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-pass
+              key: rootpassword
+        - name: MARIADB_USER
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-pass
+              key: user
+        - name: MARIADB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-pass
+              key: password
+        - name: MARIADB_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-pass
+              key: database
+        ports:
+        - containerPort: 3306
+          name: mariadb
+        volumeMounts:
+        - name: mariadb-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mariadb-persistent-storage
+        persistentVolumeClaim:
+          claimName: mariadb-pv-claim
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mypythonapp
+  labels:
+    app: mypythonapp
+spec:
+  selector:
+    matchLabels:
+      app: mypythonapp
+      tier: mariadb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mypythonapp
+        tier: mariadb
+    spec:
+      containers:
+      - name: mypythonapp
+        image: vanessakovalsky/correction-python
+        stdin: true
+        tty: true
+        env:
+        - name: USER_DB
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-pass
+              key: user
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-pass
+              key: password
+        - name: DB_HOST
+          value: "mariadb-svc"
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-pass
+              key: database
