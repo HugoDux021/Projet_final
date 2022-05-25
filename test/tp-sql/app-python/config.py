@@ -3,5 +3,5 @@ config = {
     'password' : 'AliBABA2',
     'host': 'localhost',
     'port': 3306,
-    'database': 'Registre_QCM',
+    'database': 'BDD_QCM_Projet',
 }

@@ -1,6 +1,6 @@
-CREATE DATABASE if not exists Registre_QCM;
+CREATE DATABASE if not exists BDD_QCM_Projet;
 
-USE Registre_QCM;
+USE BDD_QCM_Projet;
 
 CREATE TABLE IF NOT EXISTS QCM (
     `id` INT(10) AUTO_INCREMENT PRIMARY KEY,
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS question (
     `intitule` VARCHAR(256) NOT NULL,  
     `rep_A` VARCHAR(256) NOT NULL,
     `rep_B` VARCHAR(256) NOT NULL, 
-    `rep_C` VARCHAR(256) NOT NULL,  
-    `QCM_id` INT(10),
-    FOREIGN KEY (`QCM_id`) REFERENCES QCM(`id`) ON DELETE CASCADE
+    `rep_C` VARCHAR(256) NOT NULL, 
+    `rep_Correcte` VARCHAR(256) NOT NULL,  
+    `QCM_id` INT(10)
 );

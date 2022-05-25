@@ -17,6 +17,7 @@ import connect_db as db
 
 bdd = db.ConnectDb(config.config)
 connexion = bdd.connect()
+cursor = connexion.cursor()
 
 
 ############################################################################
@@ -51,7 +52,6 @@ class Nom_QCM:
 
     def ajouter_un_QCM(self, nom_qcm):
         try:
-            cursor = connexion.cursor()
             cursor.execute('INSERT INTO QCM (`nom`) VALUES (?);',(nom_qcm,))
             connexion.commit()
             return 'Le QCM a bien été ajoutée'
@@ -117,10 +117,9 @@ class question:
     #####################################
     # Permettre l’ajout d’une application
     
-    def ajouter_une_question(self, liste_donnees, nom_qcm):
+    def ajouter_une_question(self, liste_donnees, id_qcm):
         try:
-            cursor = connexion.cursor()
-            cursor.execute('INSERT INTO question ( `intitule`, `rep_A`, `rep_B`, `rep_C`, `rep_Correcte`, `QCM_id`)  VALUES (?, ?, ?, ?, ?, ?);',(liste_donnees[0], liste_donnees[1], liste_donnees[2], liste_donnees[3], liste_donnees[4], nom_qcm))
+            cursor.execute('INSERT INTO question ( `intitule`, `rep_A`, `rep_B`, `rep_C`, `rep_Correcte`, `QCM_id`)  VALUES (?, ?, ?, ?, ?, ?);',(liste_donnees[0], liste_donnees[1], liste_donnees[2], liste_donnees[3], liste_donnees[4], id_qcm))
             connexion.commit()
             return 'La question a bien été ajoutée'
         except mariadb.Error as e:     
@@ -143,12 +142,12 @@ def ma_commande_nom_qcm():
     nom = Ent0.get()
     if nom == "": 
         Af1.configure(text= u"Vous n'avez pas mis de nom" )                     # On précise le problème à l'utilisateur.
-    else:       
-        Af1.configure(text= u"Le nom est bien enregistré" )
+    else:    
+        #Enregistrement sur Mysql
+        tex = Nom_QCM.ajouter_un_QCM('',nom)
+        Af1.configure(text=tex)
         Fen0.destroy()
         
-        #Enregistrement sur Mysql
-        Nom_QCM.ajouter_un_QCM('',nom)
         
 #Création du bouton
 Bout0 = tk.Button(Fen0,text=u"Valider", command=ma_commande_nom_qcm)
@@ -182,7 +181,9 @@ Ent5 = tk.Entry(Fen1)
 #on stocke les questions dans une liste
 listOfQuestions = []
 Q1 = Question() # Pour faciliter l'écriture on renomme la classe
-
+# One récupére l'id du QCM pour associés les questions
+cursor.execute('SELECT MAX(QCM.ID) FROM QCM;')
+id_qcm = cursor.fetchall()
 
 def ma_commande1():  # On crée une commande qui à pour but de vérifier si toutes les entrées possèdent un texte.
     enonce=Ent1.get()    # On renomme les textes entrés pur faciliter l'utilisation de ceux-ci et meiux les reconnaitre.
@@ -226,7 +227,7 @@ def ma_commande1():  # On crée une commande qui à pour but de vérifier si tou
         Af6.configure(text= u"" )
 
         #Enregistrement sur Mysql
-        question.ajouter_une_question('',Question_entiere, nom_qcm)
+        print(question.ajouter_une_question('',Question_entiere, id_qcm[0][0]))
         
 
     
@@ -251,7 +252,7 @@ def ma_commande2():
         listOfQuestions.append(Q)
         #Enregistrement sur Mysql
         Question_entiere = [enonce, rep1, rep2, rep3, repjuste]
-        question.ajouter_une_question('',Question_entiere, nom_qcm)
+        print(question.ajouter_une_question('',Question_entiere, id_qcm[0][0]))
         print(Question_entiere)
         #Fermeture de la fenetre
         Fen1.destroy()
