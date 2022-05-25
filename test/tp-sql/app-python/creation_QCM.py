@@ -23,19 +23,6 @@ cursor = connexion.cursor()
 ############################################################################
 # Création des classes
 
-class Question:
-    def __init__(self, enonce="", rep1="", rep2="", rep3="", repjuste="" ):  # Définition des objetss de la classe
-        self.enonce = enonce
-        self.rep1 = rep1
-        self.rep2= rep2
-        self.rep3 = rep3
-        self.repjuste = repjuste
-    #permet d'afficher avec print
-    def __str__(self):
-        return "enonce=%s ; rep1=%s ; rep2=%s ; rep3=%s ; repJuste=%s" % (self.enonce, self.rep1, self.rep2, self.rep3, self.repjuste)
-
-
-#############
 class Nom_QCM:
 
     def __init__(self, connexion) -> None:
@@ -137,34 +124,49 @@ Af0 = tk.Label(Fen0, text= u"Ecrire le nom de votre QCM." )
 Af1 = tk.Label(Fen0, text= u"" )
 Ent0 = tk.Entry(Fen0)
 
-
+# Fonction qui enregistre le nom du QCM créé
 def ma_commande_nom_qcm():  
     nom = Ent0.get()
     if nom == "": 
         Af1.configure(text= u"Vous n'avez pas mis de nom" )                     # On précise le problème à l'utilisateur.
     else:    
         #Enregistrement sur Mysql
-        tex = Nom_QCM.ajouter_un_QCM('',nom)
-        Af1.configure(text=tex)
-        Fen0.destroy()
+        text_return = Nom_QCM.ajouter_un_QCM('',nom)
+        
+        Af1.configure(text=text_return)
+        Bout0_Fen0.pack_forget()
+        Bout1_Fen0.pack()
         
         
-#Création du bouton
-Bout0 = tk.Button(Fen0,text=u"Valider", command=ma_commande_nom_qcm)
+# Action de fermeture de la fenetre
+def fermeture_Fen0():
+    Fen0.destroy()
+        
+    
+# Création des boutons
+Bout0_Fen0 = tk.Button(Fen0,text=u"Valider", command = ma_commande_nom_qcm)
+Bout1_Fen0 = tk.Button(Fen0,text=u"ok", command = fermeture_Fen0)
 
+# Affichage sur la fenetre
 Af0.pack()           
 Ent0.pack()
 Af1.pack()
-Bout0.pack()
+Bout0_Fen0.pack()
 
+# Maintient la fenetre
 Fen0.mainloop()
+
+
+
 
 ############################################################################
 #fenetre de saisie des questions
 
-Fen1 = tk.Tk() #Création de la fênetre, des entrées, etc
+# Création de la fênetre
+Fen1 = tk.Tk() 
 Fen1.title(u"Création question" )
 
+# Création des notifications
 Af1 = tk.Label(Fen1, text= u"Ecrire une question." )
 Af2 = tk.Label(Fen1, text="Ecrire la réponse A." )
 Af3 = tk.Label(Fen1, text="Ecrire la réponse B." )
@@ -172,94 +174,95 @@ Af4 = tk.Label(Fen1, text="Ecrire la réponse C." )
 Af5 = tk.Label(Fen1, text="Ecrire la réponse juste (A, B ou C)." )
 Af6 = tk.Label(Fen1, text="" )
 
+# Création des entrés de texte
 Ent1 = tk.Entry(Fen1)
 Ent2 = tk.Entry(Fen1)
 Ent3 = tk.Entry(Fen1)
 Ent4 = tk.Entry(Fen1)
 Ent5 = tk.Entry(Fen1)
 
-#on stocke les questions dans une liste
-listOfQuestions = []
-Q1 = Question() # Pour faciliter l'écriture on renomme la classe
-# One récupére l'id du QCM pour associés les questions
+# On récupére l'id du QCM pour associés les questions
 cursor.execute('SELECT MAX(QCM.ID) FROM QCM;')
 id_qcm = cursor.fetchall()
 
-def ma_commande1():  # On crée une commande qui à pour but de vérifier si toutes les entrées possèdent un texte.
-    enonce=Ent1.get()    # On renomme les textes entrés pur faciliter l'utilisation de ceux-ci et meiux les reconnaitre.
+
+# On crée une commande qui à pour but de vérifier si toutes les entrées possèdent un texte.
+# Si oui on enregistre les données de la question et on passe à la question suivante
+def ma_commande1():  
+    # On renomme les textes entrés pur faciliter l'utilisation de ceux-ci et meiux les reconnaitre.
+    enonce=Ent1.get()    
     rep1=Ent2.get()
     rep2=Ent3.get()
     rep3=Ent4.get()
     repjuste=Ent5.get()
+    
+    # On verifie que les cases sont bien remplies
     if enonce=="" or rep1=="" or rep2=="" or rep3=="" or repjuste=="":              # On intègre une condition permettant de vérifier si les entrées sont vides.
         Bout2.pack_forget ()                                                            # Ainsi le bouton disparaitra.
         Af6.configure(text= u"Vous n'avez pas rempli toutes les cases" )                     # On précise le problème à l'utilisateur.
     else:
         global n        # On intègre le compteur de question à la commande
         
+        #On récupére les valeurs
         Question_entiere = [enonce, rep1, rep2, rep3, repjuste]
         
-        Q1.enonce = enonce   # On enregistre le texte entré dans l'objet correspondant au texte, ici l'objet énoncé, !!!!! dans la classe correspondant à la question. !!!!!!
+        #On réinitialise les valeurs
         Ent1.delete (0,tk.END)  # On supprime le texte contenue dans l'entrée pour pouvoir entrer un nouveau texte
-        Q1.rep1 = rep1
         Ent2.delete (0,tk.END)
-        Q1.rep2 = rep2
         Ent3.delete (0,tk.END)
-        Q1.rep3 = rep3
         Ent4.delete (0,tk.END)
-        Q1.repjuste = repjuste
         Ent5.delete (0,tk.END)
         
-        n=n+1                   # Le compteur augmente à chaque fois que l'on appuie sur le bouton.
+        # Le compteur augmente à chaque fois que l'on appuie sur le bouton.
+        n=n+1 
         
-        Af1.configure(text= u"Ecrire une question "+ str(n)+'.')                         # On met à jour le numéro de la question, de l'énoncé ....
+        # On met à jour le numéro de la question
+        Af1.configure(text= u"Ecrire une question "+ str(n)+'.')                         
         Af2.configure(text= u"Ecrire la réponse A, de la question "+ str(n)+'.')
         Af3.configure(text= u"Ecrire la réponse B, de la question "+ str(n)+'.')
         Af4.configure(text= u"Ecrire la réponse C, de la question "+ str(n)+'.')
         Af5.configure(text= u"Ecrire la réponse juste (A, B ou C), de la question "+ str(n)+'.')
         
+        # On affiche les bouton permettant d'enregistrer/question suivante ou d'enregistrer/quitter
+        Bout1.pack() 
         Bout2.pack()
-        
-        #Enregistrement des valeurs en local
-        Q = Question(Q1.enonce, Q1.rep1, Q1.rep2, Q1.rep3, Q1.repjuste)
-        listOfQuestions.append(Q)
-        Bout1.pack ()           # Si les entrées possédent un texte le bouton apparaitra.
-        Af6.configure(text= u"" )
 
         #Enregistrement sur Mysql
-        print(question.ajouter_une_question('',Question_entiere, id_qcm[0][0]))
-        
+        question.ajouter_une_question('',Question_entiere, id_qcm[0][0])
+
 
     
 def ma_commande2():
-    enonce=Ent1.get()       # On renomme les textes entrés pour faciliter l'utilisation de ceux-ci et meiux les reconnaitre.
-    Q1.enonce=enonce         # On enregistre le texte entré dans l'objet correspondant au texte, ici l'objet énoncé, !!!!! dans la classe correspondant à la question. !!!!!!
-    rep1=Ent2.get()         #De même
-    Q1.rep1=rep1
-    rep2=Ent3.get()         #De même
-    Q1.rep2=rep2
-    rep3=Ent4.get()         #De même
-    Q1.rep3= rep3
-    repjuste=Ent5.get()     #De même
-    Q1.repjuste=repjuste
+    # On renomme les textes entrés pur faciliter l'utilisation de ceux-ci et meiux les reconnaitre.
+    enonce=Ent1.get()    
+    rep1=Ent2.get()
+    rep2=Ent3.get()
+    rep3=Ent4.get()
+    repjuste=Ent5.get()
     
+    # On verifie que les cases sont bien remplies
     if enonce=="" or rep1=="" or rep2=="" or rep3=="" or repjuste=="":                                                      # Ainsi le bouton disparaitra.
         Af6.configure(text= u"Vous n'avez pas rempli toutes les cases" ) 
     
     else:
-        #Enregistrement des valeurs en local
-        Q = Question(Q1.enonce, Q1.rep1, Q1.rep2, Q1.rep3, Q1.repjuste)
-        listOfQuestions.append(Q)
         #Enregistrement sur Mysql
         Question_entiere = [enonce, rep1, rep2, rep3, repjuste]
-        print(question.ajouter_une_question('',Question_entiere, id_qcm[0][0]))
-        print(Question_entiere)
-        #Fermeture de la fenetre
-        Fen1.destroy()
+        text_return = question.ajouter_une_question('',Question_entiere, id_qcm[0][0])
+        Af6.configure(text=text_return)
+        Bout1.pack_forget()
+        Bout2.pack_forget()
+        Bout3.pack()
 
 
+# Action de fermeture de la fenetre
+def fermeture_Fen1():
+    Fen1.destroy()
+    
+    
+    
 Bout1 = tk.Button(Fen1,text=u"Question suivante", command=ma_commande1)                     # Création des boutons
 Bout2 = tk.Button(Fen1,text=u"Enregistrer", command=ma_commande2)
+Bout3 = tk.Button(Fen1,text=u"ok", command = fermeture_Fen1)
 
 Af1.pack()              # Affichage des différents bidules.
 Ent1.pack()
@@ -275,13 +278,10 @@ Af6.pack()
 Bout1.pack()
 
 Bout2.pack_forget()
+Bout3.pack_forget()
 
 Fen1.mainloop()
 
-#affiche les questions sauvegardees dans la liste
-for index in range(len(listOfQuestions)):
-    print(listOfQuestions[index])
-    
     
     
     
