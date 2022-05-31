@@ -26,7 +26,7 @@ task pycodestyle(type:Exec, dependsOn: dep) {
 
 task lint(type:Exec, dependsOn: dep) {
     executable 'sh'
-    args '-c', "flake8 --output-file=output.txt app/"
+    args '-c', "flake8 --format=html --htmldir=flake-report ../app/"
     ignoreExitValue true
 }
 
