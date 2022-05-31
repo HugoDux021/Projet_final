@@ -26,7 +26,7 @@ task pycodestyle(type:Exec, dependsOn: dep) {
 
 task lint(type:Exec, dependsOn: dep) {
     executable 'sh'
-    args '-c', "flake8 --format=html --htmldir=/var/jenkins_home/workspace/pipelineprojet/output.txt"
+    args '-c', "flake8 --format=html --htmldir=/var/jenkins_home/workspace/pipelineprojet/build"
     ignoreExitValue true
 }
 
