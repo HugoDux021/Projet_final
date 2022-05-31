@@ -57,7 +57,7 @@ pipeline {
             recordIssues(
                     tools: [pep8(pattern: 'gradle/result-pycode.report')]
                 )
-            junit 'gradle/report_test.xml'
+            //junit 'gradle/report_test.xml'
           }
       }
  }
