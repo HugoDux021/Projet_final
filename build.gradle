@@ -41,7 +41,7 @@ task packageDistribution(type: Zip, dependsOn: dep) {
 
 task up(type:Exec, dependsOn: packageDistribution) {
   executable 'sh'
-  args '-c', 'curl -v --user "'+nexusUsername+':'+nexusPassword+'" --upload-file build/project-'+version+'.zip http://127.0.0.1:8099/'+nexusRepo+'/application-'+version+'.zip'
+  args '-c', 'curl -v --user "'+nexusUsername+':'+nexusPassword+'" --upload-file build/project-'+version+'.zip http://'+nexusRepo+':8099/repository/nexus_projet2/application-'+version+'.zip'
   standardOutput = new ByteArrayOutputStream()
   ext.output = { return standardOutput.toString() }
 }
