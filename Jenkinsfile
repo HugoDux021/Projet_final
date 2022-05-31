@@ -3,8 +3,10 @@ pipeline {
       environment {
         PATH = "/var/jenkins_home/.local/bin:${env.PATH}"
         imagename = 'imagejenkins2'
+        //registry = "formation2/projet"
+        //registryCredential = 'dockerhub'
         registryCredential = 'docker'
-      }
+        } 
 
       agent any
       stages {
@@ -50,28 +52,11 @@ pipeline {
         }
 
         stage('Build docker image') {
-            steps{
+            steps {
                 script {
                     docker.build registry + ":$BUILD_NUMBER"
                 } 
             }
         }
-
-
-        //stage('Push Image') {
-        //    steps{
-        //        script {
-         //           docker.withRegistry( '', registryCredential ) {
-         //               dockerImage.push("$BUILD_NUMBER")
-          //          }
-        //        }
-         //   }
-        //}
-
-        //stage('Test image docker') {
-        //    steps {
-        //        sh 'docker run -d --name cont-jenkinstp6:cont-jenkinstp6 -p 3002:3002 --rm formation2/cont-jenkinstp6:cont-jenkinstp6'
-         //   }
-        //}
     }
  }
