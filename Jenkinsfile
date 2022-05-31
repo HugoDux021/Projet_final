@@ -53,7 +53,7 @@ pipeline {
       }
       post {
           always {
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'output.txt', reportFiles: 'index.html', reportName: 'Flake 8 violations', reportTitles: ''])
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'build', reportFiles: 'index.html', reportName: 'Flake 8 violations', reportTitles: ''])
             recordIssues(
                     tools: [pep8(pattern: 'gradle/result-pycode.report')]
                 )
