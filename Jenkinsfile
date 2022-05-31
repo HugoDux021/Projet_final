@@ -5,7 +5,7 @@ pipeline {
         imagename = 'imagejenkins2'
         //registry = "formation2/projet"
         //registryCredential = 'dockerhub'
-        registryCredential = 'docker'
+        //registryCredential = 'docker'
         } 
 
       agent any
@@ -50,13 +50,14 @@ pipeline {
                 sh 'gradle up'
             }
         }
-
-        stage('Build docker image') {
-            steps {
-                script {
-                    docker.build registry + ":$BUILD_NUMBER"
-                } 
-            }
-        }
-    }
+      }
+      post {
+          always {
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'gradle/flake-report', reportFiles: 'index.html', reportName: 'Flake 8 violations', reportTitles: ''])
+            recordIssues(
+                    tools: [pep8(pattern: 'gradle/result-pycode.report')]
+                )
+            junit 'gradle/report_test.xml'
+          }
+      }
  }
