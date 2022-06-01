@@ -13,7 +13,11 @@ task purge(type:Delete) {
 task dep(type:Exec, dependsOn: purge) {
   //println 'Installing dependencies'
     executable 'sh'
+<<<<<<< HEAD
     args '-c', 'pip3 install flake8 pytest flake8-html'
+=======
+    args '-c', 'pip3 install -r ./files/app-python/requirements.txt'
+>>>>>>> baffac56cdff738ed92c9f83a00b01b330cf686d
     standardOutput = new ByteArrayOutputStream()
     ext.output = { return standardOutput.toString() }
 }
@@ -21,7 +25,11 @@ task dep(type:Exec, dependsOn: purge) {
 task test(type:Exec, dependsOn: dep) {
     println 'Executing tests'
     executable 'sh'
+<<<<<<< HEAD
     args '-c', 'python3 -m pytest ./test/tp-sql/app-test/test.py --junitxml=report_test.xml '
+=======
+    args '-c', 'pytest ./files/app-test/test.py --junitxml=report_test.xml '
+>>>>>>> baffac56cdff738ed92c9f83a00b01b330cf686d
     standardOutput = new ByteArrayOutputStream()
     ext.output = { return standardOutput.toString() }
     ignoreExitValue true
@@ -29,19 +37,32 @@ task test(type:Exec, dependsOn: dep) {
 
 task pycodestyle(type:Exec, dependsOn: dep) {
     executable 'sh'
+<<<<<<< HEAD
     args '-c', "pycodestyle test/tp-sql/ >> result-pycode.txt"
+=======
+    args '-c', "pycodestyle ./files/app-python >> result-pycode.report"
+>>>>>>> baffac56cdff738ed92c9f83a00b01b330cf686d
     ignoreExitValue true
 }
 
 task lint(type:Exec, dependsOn: dep) {
     executable 'sh'
+<<<<<<< HEAD
     args '-c', "flake8 --format=html --htmldir=/var/jenkins_home/workspace/pipelineprojet/build"
+=======
+    args '-c', "flake8 --format=html --htmldir=flake-report ./files/app-python"
+>>>>>>> baffac56cdff738ed92c9f83a00b01b330cf686d
     ignoreExitValue true
 }
 
 def tarfile = "project-" + version
+<<<<<<< HEAD
 task packageDistribution(type: Zip, dependsOn: dep) {
     from ('test') { into 'test' }
+=======
+task packageDistribution(type: Zip) {
+    from ('./files/app-python') { into 'app' }
+>>>>>>> baffac56cdff738ed92c9f83a00b01b330cf686d
     archiveFileName = tarfile + ".zip"
     destinationDirectory = file("build")
 }
