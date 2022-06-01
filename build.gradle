@@ -14,7 +14,6 @@ task dep(type:Exec, dependsOn: purge) {
   //println 'Installing dependencies'
     executable 'sh'
     args '-c', 'pip3 install flake8 pytest flake8-html'
-    args '-c', 'pip3 install -r ./files/app-python/requirements.txt'
     standardOutput = new ByteArrayOutputStream()
     ext.output = { return standardOutput.toString() }
 }
@@ -23,7 +22,6 @@ task test(type:Exec, dependsOn: dep) {
     println 'Executing tests'
     executable 'sh'
     args '-c', 'python3 -m pytest ./test/tp-sql/app-test/test.py --junitxml=report_test.xml '
-    args '-c', 'pytest ./files/app-test/test.py --junitxml=report_test.xml '
     standardOutput = new ByteArrayOutputStream()
     ext.output = { return standardOutput.toString() }
     ignoreExitValue true
@@ -32,23 +30,18 @@ task test(type:Exec, dependsOn: dep) {
 task pycodestyle(type:Exec, dependsOn: dep) {
     executable 'sh'
     args '-c', "pycodestyle test/tp-sql/ >> result-pycode.txt"
-    args '-c', "pycodestyle ./files/app-python >> result-pycode.report"
     ignoreExitValue true
 }
 
 task lint(type:Exec, dependsOn: dep) {
     executable 'sh'
     args '-c', "flake8 --format=html --htmldir=/var/jenkins_home/workspace/pipelineprojet/build"
-    args '-c', "flake8 --format=html --htmldir=flake-report ./files/app-python"
     ignoreExitValue true
 }
 
 def tarfile = "project-" + version
 task packageDistribution(type: Zip, dependsOn: dep) {
     from ('test') { into 'test' }
-    
-task packageDistribution(type: Zip) {
-    from ('./files/app-python') { into 'app' }
     archiveFileName = tarfile + ".zip"
     destinationDirectory = file("build")
 }
