@@ -18,6 +18,15 @@ task dep(type:Exec, dependsOn: purge) {
     ext.output = { return standardOutput.toString() }
 }
 
+task test(type:Exec) {
+    println 'Executing tests'
+    executable 'sh'
+    args '-c', 'pytest ./test/tp-sql/app-test/test.py --junitxml=report_test.xml '
+    standardOutput = new ByteArrayOutputStream()
+    ext.output = { return standardOutput.toString() }
+    ignoreExitValue true
+}
+
 task pycodestyle(type:Exec, dependsOn: dep) {
     executable 'sh'
     args '-c', "pycodestyle app/ >> result-pycode.txt"
