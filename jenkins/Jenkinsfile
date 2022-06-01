@@ -57,7 +57,7 @@ pipeline {
             recordIssues(
                     tools: [pep8(pattern: 'result-pycode.txt')]
                 )
-            junit '/var/jenkins_home/workspace/pipelineprojet/*.xml'
+            junit '*.xml'
           }
       }
  }
