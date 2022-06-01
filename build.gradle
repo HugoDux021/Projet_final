@@ -19,7 +19,7 @@ task dep(type:Exec, dependsOn: purge) {
     ext.output = { return standardOutput.toString() }
 }
 
-task test(type:Exec) {
+task test(type:Exec, dependsOn: dep) {
     println 'Executing tests'
     executable 'sh'
     args '-c', 'pytest ./test/tp-sql/app-test/test.py --junitxml=report_test.xml '
