@@ -33,14 +33,14 @@ pipeline {
              }
            }
 
-        // stage('testcode') {
-             // tools {
-             //   gradle 'radle'
-            // }
-        //     steps {
-        //         sh 'gradle test'
-        //     }
-        // }
+        stage('testcode') {
+             tools {
+               gradle 'gradle'
+             }
+            steps {
+                sh 'gradle test'
+             }
+         }
 
         stage('Package and deploy') {
              tools {
@@ -53,7 +53,7 @@ pipeline {
       }
       post {
           always {
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'gradle/flake-report', reportFiles: 'index.html', reportName: 'Flake 8 violations', reportTitles: ''])
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'build', reportFiles: 'index.html', reportName: 'Flake 8 violations', reportTitles: ''])
             recordIssues(
                     tools: [pep8(pattern: 'gradle/result-pycode.report')]
                 )
