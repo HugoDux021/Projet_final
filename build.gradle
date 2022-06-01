@@ -13,7 +13,7 @@ task purge(type:Delete) {
 task dep(type:Exec, dependsOn: purge) {
     println 'Installing dependencies'
     executable 'sh'
-    args '-c', 'pip3 install -r ../app/requirements.txt'
+    args '-c', 'pip3 install -r ./files/app-python/requirements.txt'
     standardOutput = new ByteArrayOutputStream()
     ext.output = { return standardOutput.toString() }
 }
@@ -21,7 +21,7 @@ task dep(type:Exec, dependsOn: purge) {
 task test(type:Exec) {
     println 'Executing tests'
     executable 'sh'
-    args '-c', 'pytest ../app/tests/test.py --junitxml=report_test.xml '
+    args '-c', 'pytest ./files/app-test/test.py --junitxml=report_test.xml '
     standardOutput = new ByteArrayOutputStream()
     ext.output = { return standardOutput.toString() }
     ignoreExitValue true
@@ -29,19 +29,19 @@ task test(type:Exec) {
 
 task pycodestyle(type:Exec) {
     executable 'sh'
-    args '-c', "pycodestyle ../app/ >> result-pycode.report"
+    args '-c', "pycodestyle ./files/app-python >> result-pycode.report"
     ignoreExitValue true
 }
 
 task lint(type:Exec) {
     executable 'sh'
-    args '-c', "flake8 --format=html --htmldir=flake-report ../app/"
+    args '-c', "flake8 --format=html --htmldir=flake-report ./files/app-python"
     ignoreExitValue true
 }
 
 def tarfile = "project-" + version
 task packageDistribution(type: Zip) {
-    from ('../app') { into 'app' }
+    from ('./files/app-python') { into 'app' }
     archiveFileName = tarfile + ".zip"
     destinationDirectory = file("build")
 }
