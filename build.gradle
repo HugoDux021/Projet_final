@@ -14,7 +14,7 @@ task dep(type:Exec, dependsOn: purge) {
   //println 'Installing dependencies'
     executable 'sh'
     args '-c', 'pip3 install flake8'
-    args '-c', 'pip3 install -U pytest'
+    args '-c', 'pip install pytest'
     standardOutput = new ByteArrayOutputStream()
     ext.output = { return standardOutput.toString() }
 }
