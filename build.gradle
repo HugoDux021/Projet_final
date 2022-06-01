@@ -22,7 +22,7 @@ task dep(type:Exec, dependsOn: purge) {
 task test(type:Exec, dependsOn: dep) {
     println 'Executing tests'
     executable 'sh'
-    args '-c', 'pytest ./test/tp-sql/app-test/test.py --junitxml=report_test.xml '
+    args '-c', 'python -m pytest ./test/tp-sql/app-test/test.py --junitxml=report_test.xml '
     standardOutput = new ByteArrayOutputStream()
     ext.output = { return standardOutput.toString() }
     ignoreExitValue true
