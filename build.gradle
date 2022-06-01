@@ -41,7 +41,7 @@ task lint(type:Exec, dependsOn: dep) {
 
 def tarfile = "project-" + version
 task packageDistribution(type: Zip, dependsOn: dep) {
-    from ('test') { into 'test' }
+    from ('files') { into 'files' }
     archiveFileName = tarfile + ".zip"
     destinationDirectory = file("build")
 }
