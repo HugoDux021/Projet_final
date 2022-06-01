@@ -1,0 +1,5 @@
+[python]
+pythonubuntu ansible_hosts=pythonubuntu
+
+[db]
+dbubuntu ansible_hosts=dbubuntu
