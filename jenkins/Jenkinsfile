@@ -1,7 +1,7 @@
 pipeline {
 
       environment {
-        PATH = "/var/jenkins_home/.local/bin:${env.PATH}/gradle"
+        PATH = "/var/jenkins_home/.local/bin:${env.PATH}"
         imagename = 'imagejenkins2'
         //registry = "formation2/projet"
         //registryCredential = 'dockerhub'
