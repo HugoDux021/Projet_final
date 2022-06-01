@@ -1,0 +1,56 @@
+def majorVersion = System.getenv("MAJOR_VERSION") ?: "1"
+def minorVersion = System.getenv("MINOR_VERSION") ?: "0"
+
+def buildVersion = System.getenv("BUILD_NUMBER")
+
+version = majorVersion + "." + minorVersion + "." + buildVersion 
+
+task purge(type:Delete) {
+  println 'Cleaning up old files'
+  delete 'build/*.zip'
+}
+
+task dep(type:Exec, dependsOn: purge) {
+    println 'Installing dependencies'
+    executable 'sh'
+    args '-c', 'pip3 install -r ../app/requirements.txt'
+    standardOutput = new ByteArrayOutputStream()
+    ext.output = { return standardOutput.toString() }
+}
+
+task test(type:Exec) {
+    println 'Executing tests'
+    executable 'sh'
+    args '-c', 'pytest ../app/tests/test.py --junitxml=report_test.xml '
+    standardOutput = new ByteArrayOutputStream()
+    ext.output = { return standardOutput.toString() }
+    ignoreExitValue true
+}
+
+task pycodestyle(type:Exec) {
+    executable 'sh'
+    args '-c', "pycodestyle ../app/ >> result-pycode.report"
+    ignoreExitValue true
+}
+
+task lint(type:Exec) {
+    executable 'sh'
+    args '-c', "flake8 --format=html --htmldir=flake-report ../app/"
+    ignoreExitValue true
+}
+
+def tarfile = "project-" + version
+task packageDistribution(type: Zip) {
+    from ('../app') { into 'app' }
+    archiveFileName = tarfile + ".zip"
+    destinationDirectory = file("build")
+}
+
+//def newVersion = minorVersion.toInteger() + 1
+
+task up(type:Exec, dependsOn: packageDistribution) {
+  executable 'sh'
+  args '-c', 'curl -v --user "'+nexusUsername+':'+nexusPassword+'" --upload-file build/project-'+version+'.zip http://'+nexusRepo+':8081/repository/ArchiveZip/demo-python/project/'+version+'/application-'+version+'.zip'
+  standardOutput = new ByteArrayOutputStream()
+  ext.output = { return standardOutput.toString() }
+}
