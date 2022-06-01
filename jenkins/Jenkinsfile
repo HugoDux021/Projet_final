@@ -57,7 +57,7 @@ pipeline {
             recordIssues(
                     tools: [pep8(pattern: 'result-pycode.txt')]
                 )
-            junit allowEmptyResults: true, testResults: '**/*.xml'
+            junit 'gradle/report_test.xml'
           }
       }
  }
