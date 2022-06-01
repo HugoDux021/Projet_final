@@ -55,7 +55,7 @@ pipeline {
           always {
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'build', reportFiles: 'index.html', reportName: 'Flake 8 violations', reportTitles: ''])
             recordIssues(
-                    tools: [pep8(pattern: 'result-pycode.report')]
+                    tools: [pep8(pattern: 'result-pycode.txt')]
                 )
             junit allowEmptyResults: true, testResults: '**/test-results/*.xml'
           }
