@@ -33,14 +33,14 @@ pipeline {
              }
            }
 
-        // stage('testcode') {
-             // tools {
-             //   gradle 'radle'
-            // }
-        //     steps {
-        //         sh 'gradle test'
-        //     }
-        // }
+        stage('testcode') {
+             tools {
+               gradle 'gradle'
+             }
+            steps {
+                sh 'gradle test'
+             }
+         }
 
         stage('Package and deploy') {
              tools {
@@ -57,7 +57,7 @@ pipeline {
             recordIssues(
                     tools: [pep8(pattern: 'gradle/result-pycode.report')]
                 )
-            //junit 'gradle/report_test.xml'
+            junit 'gradle/report_test.xml'
           }
       }
  }
