@@ -1,5 +1,0 @@
-mysql_root_password: rootpassword
-database_user: QCM_user
-database_password: password
-database_name: application_QCM
-#database_connection: # qu'est ce que c'est ?
