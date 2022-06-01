@@ -1,4 +1,0 @@
-pytest
-pycode 
-flake8
-flake8-html
