@@ -57,7 +57,8 @@ pipeline {
             recordIssues(
                     tools: [pep8(pattern: 'result-pycode.txt')]
                 )
-            junit 'gradle/report_test.xml'
+            sh 'ln -s tests/test-results-unit.xml $WORKSPACE'
+            junit 'test-results-unit.xml'
           }
       }
  }
