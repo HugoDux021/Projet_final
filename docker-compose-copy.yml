@@ -1,0 +1,98 @@
+version: "3.7"
+services:
+  jenkins:
+    depends_on: 
+      - master      
+    image: jenkins:latest
+    container_name: jenkins
+    hostname: jenkins
+    stdin_open: true
+    tty: true
+    command : >
+      /bin/sh -c "
+      ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa
+      && sshpass -f /root/sshpassword.txt ssh-copy-id -i ~/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@master01
+      && /bin/sh"      
+    ports: 
+      - "8098:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+  nexus:
+    image: sonatype/nexus3
+    container_name: nexus
+    hostname: nexus
+    stdin_open: true
+    tty: true
+    ports:
+      - "8099:8081"    
+    volumes:
+      - nexus-data:/nexus-data
+  master:
+    image: alpine:latest
+    container_name: master01
+    hostname: master01
+    stdin_open: true
+    tty: true
+    command : >
+      /bin/sh -c "apk update 
+      && apk add ansible 
+      && apk add --no-cache openssh
+      && apk add --no-cache sshpass
+      && ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa 
+      && sshpass -f /root/sshpassword.txt ssh-copy-id -i ~/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@pythonubuntu
+      && sshpass -f /root/sshpassword.txt ssh-copy-id -i ~/.ssh/id_rsa.pub -o StrictHostKeyChecking=no root@dbubuntu
+      && /bin/sh"
+    volumes:
+      - ansible_vol:/var/ans
+      - ./files/:/files/
+      ##  - ./hosts:/etc/ansible/hosts
+      - ~/.ssh:/root/.ssh  #### ou      - ./sshpassword.txt:/root/sshpassword.txt
+  pythonubuntu:
+    links:
+      - master
+    image: ubuntu
+    container_name: pythonubuntu
+    hostname: pythonubuntu
+    stdin_open: true
+    tty: true
+    command : >
+      bash -c "apt update && apt upgrade -y 
+      &&  DEBIAN_FRONTEND=noninteractive 
+      &&  mkdir /run/sshd 
+      &&  apt install -y apt --no-install-recommends python3 openssh-server sudo
+      &&  sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+      &&  sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+      &&  echo 'root:toor' | chpasswd 
+      && /usr/sbin/sshd -D"
+    expose:
+      - 22
+    volumes:
+     - ansible_vol:/var/ans
+  dbubuntu:
+    links:
+      - master  
+    image: ubuntu
+    container_name: dbubuntu
+    hostname: dbubuntu
+    stdin_open: true
+    tty: true
+    command : >
+      bash -c "apt update && apt upgrade -y 
+      &&  DEBIAN_FRONTEND=noninteractive 
+      &&  mkdir /run/sshd 
+      &&  apt install -y apt --no-install-recommends python3 openssh-server sudo 
+      &&  sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+      &&  sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+      &&  echo 'root:toor' | chpasswd 
+      && /usr/sbin/sshd -D"
+    expose:
+      - 22
+    ports:
+      - 3307:3306
+    volumes:
+     - ansible_vol:/var/ans
+volumes:
+  ansible_vol:
+  jenkins_home: {}
+  nexus-data: {}
