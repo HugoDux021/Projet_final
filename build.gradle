@@ -29,7 +29,7 @@ task test(type:Exec, dependsOn: dep) {
 
 task pycodestyle(type:Exec, dependsOn: dep) {
     executable 'sh'
-    args '-c', "pycodestyle app/ >> result-pycode.txt"
+    args '-c', "pycodestyle test/tp-sql/ >> result-pycode.txt"
     ignoreExitValue true
 }
 
