@@ -126,9 +126,22 @@ Ent0 = tk.Entry(Fen0)
 
 # Fonction qui enregistre le nom du QCM créé
 def ma_commande_nom_qcm():  
-    nom = Ent0.get()
+    nom = Ent0.get()  
+    cursor.execute("SELECT nom FROM QCM")
+    liste_QCM_existants_raw = cursor.fetchall()
+    
+    # On simplifie la liste qui contient des tuples au lieux des valeurs
+    liste_QCM_existants_final = []
+    for element in liste_QCM_existants_raw:
+        liste_QCM_existants_final.append(element[0])    
+    print(liste_QCM_existants_final)
+    
     if nom == "": 
         Af1.configure(text= u"Vous n'avez pas mis de nom" )                     # On précise le problème à l'utilisateur.
+    
+    elif nom in liste_QCM_existants_final: 
+        Af1.configure(text= u"Un QCM portant ce nom existe déja, veuillez en choisir un autre" ) 
+    
     else:    
         #Enregistrement sur Mysql
         text_return = Nom_QCM.ajouter_un_QCM('',nom)
@@ -173,6 +186,7 @@ Af3 = tk.Label(Fen1, text="Ecrire la réponse B." )
 Af4 = tk.Label(Fen1, text="Ecrire la réponse C." )
 Af5 = tk.Label(Fen1, text="Ecrire la réponse juste (A, B ou C)." )
 Af6 = tk.Label(Fen1, text="" )
+Af7 = tk.Label(Fen1, text="Le QCM à bien été enregistré." )
 
 # Création des entrés de texte
 Ent1 = tk.Entry(Fen1)
@@ -233,7 +247,7 @@ def ma_commande1():
 
     
 def ma_commande2():
-    # On renomme les textes entrés pur faciliter l'utilisation de ceux-ci et meiux les reconnaitre.
+    # On renomme les textes entrés pour faciliter l'utilisation de ceux-ci et mieux les reconnaitre.
     enonce=Ent1.get()    
     rep1=Ent2.get()
     rep2=Ent3.get()
@@ -249,6 +263,8 @@ def ma_commande2():
         Question_entiere = [enonce, rep1, rep2, rep3, repjuste]
         text_return = question.ajouter_une_question('',Question_entiere, id_qcm[0][0])
         Af6.configure(text=text_return)
+        Af6.pack_forget()
+        Af7.pack()
         Bout1.pack_forget()
         Bout2.pack_forget()
         Bout3.pack()

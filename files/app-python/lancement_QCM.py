@@ -120,10 +120,6 @@ def ma_commande12():
                 Af7.pack()
                 Af7.configure(text=u"Bonne réponse ! vous pouvez passer la question suivante" )
                 Bout2.pack()        # LE bouton permettant de passer à la question suivante apparait.
-            elif repjoueur not in ["A","B","C"]:
-                Af7.pack()
-                Af7.configure(text=u"Merci d'entrer une reponse valide (A, B ou C)" )
-                Bout2.pack_forget()
             else :
                 Af7.pack()
                 Af7.configure(text=u"Mauvaise réponse ! Vous avez répondu " + repjoueur + u" alors que la bonne réponse était la " + question_actuelle[5])
@@ -141,7 +137,6 @@ def ma_commande22 (): # Commande pour paser à la question suivante.
         Af3.configure ( text=u"Réponse A : " + question_actuelle[2])
         Af4.configure ( text=u"Réponse B : " + question_actuelle[3])
         Af5.configure ( text=u"Réponse C : " + question_actuelle[4])
-        Af7.configure(text=u"" )
         Bout2.pack_forget()             #Le bouton disparait.
     else:
         #fin des questions on ferme la fenetre
