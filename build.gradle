@@ -7,7 +7,7 @@ version = majorVersion + "." + minorVersion + "." + buildVersion
 
 task purge(type:Delete) {
   println 'Cleaning up old files'
-  delete '/var/jenkins_home/workspace/pipelineprojet/build/*.zip'
+  delete 'build/*.zip'
 }
 
 task dep(type:Exec, dependsOn: purge) {
