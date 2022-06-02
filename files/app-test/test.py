@@ -1,7 +1,7 @@
 import pytest
 import sys, os
   
-cwd = "/home/dux/Documents/Formation/Projet/files/app-python"
+cwd = "/var/jenkins_home/workspace/pipelineprojet/files/app-python"
   
 fd = 'false_dir / temp'
   
