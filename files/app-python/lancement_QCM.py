@@ -164,3 +164,9 @@ Bout2.pack_forget()
 Bout3.pack_forget()
 
 Fen1.mainloop()
+
+###################################################
+# Exemple test:
+def hello(name):
+    return 'Hello ' + 'name'
+
