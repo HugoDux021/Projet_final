@@ -5,4 +5,4 @@ sys.path.insert(0, myPath + '/../')
 import ../app-python/lancement_QCM.py as lance_QCM
 
 def test_get_nom():
-    assert lance_QCM.get_version == "22.04" 
+    assert lance_QCM.hello('lucie') == 'Hello lucie'
