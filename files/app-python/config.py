@@ -1,7 +1,8 @@
+import os
 config = {
-    'user' : 'dux',
-    'password' : 'AliBABA2',
-    'host': 'localhost',
-    'port': 3306,
-    'database': 'BDD_QCM_Projet',
+    'user' : os.getenv('USER_DB'),
+    'password' : os.getenv('DB_PASSWORD'),
+    'host': os.getenv('DB_HOST'),
+    'port': int(os.getenv('DB_PORT')),
+    'database': os.getenv('DB_NAME')
 }
